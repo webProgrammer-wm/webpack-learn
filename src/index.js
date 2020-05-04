@@ -1,2 +1,5 @@
-// 引入js资源
-import './style.scss'
+function add(a, b) {
+    return a + b
+}
+
+console.log(add(2, 3))
