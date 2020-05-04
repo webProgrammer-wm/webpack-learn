@@ -95,7 +95,20 @@ const config = {
         })
     ],
     // 模式
-    mode: 'development' // production
+    mode: 'development', // production
+
+    // 开发服务器 devServer：用来自动化（自动编译，自动打开浏览器，自动刷新浏览器）
+    // 特点：只会在内存中编译打包，不会有任何输出
+    // 启动 devServer 指令为：webpack-dev-server
+    devServer: {
+        // 项目构建后的路径，如果配置了 html-webpack-plugin 的话，不会起作用
+        // contentBase: resolve(__dirname, 'dist'),
+        // 启动 gzip 压缩
+        compress: true,
+        // 端口号
+        port: 8000,
+        open: false
+    }
 }
 
 module.exports = config
