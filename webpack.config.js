@@ -1,30 +1,21 @@
+/*
+    开发环境的配置：能让代码运行
+ */
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-/*
-    loader：1.下载     2.使用（配置loader）
-    plugins：1.下载    2.引入    3.使用
- */
-
 const config = {
-    // 入口文件
-    entry: './src/index',
-    // 输出目录，输出文件名
+    entry: './src/js/index',
     output: {
-        filename: "index.js",
+        filename: "js/index.js",
         path: resolve(__dirname, 'dist')
     },
-    // loader 的配置
     module: {
-        // 详细loader配置
         rules: [
             {
-                // 匹配规则
                 test: /\.css$/,
                 use: [
-                    // 创建style标签，将js中的样式资源插入，添加到head中生效
                     'style-loader',
-                    // 将css文件变成commonjs模块加载到js中，里面内容是样式字符串
                     'css-loader'
                 ]
             },
@@ -33,81 +24,50 @@ const config = {
                 use: [
                     'style-loader',
                     'css-loader',
-                    // 将sass文件编译成css文件
                     'sass-loader'
                 ]
             },
             {
-                // 问题：默认不能处理html中img图片
-                // 处理图片资源
                 test: /\.(jpg|png|gif|jpeg|)$/,
-                // 需要下载 url-loader file-loader
                 loader: 'url-loader',
                 options: {
-                    // 图片大小小于8kb，就会被转换成base64编码
-                    // 优点：减少http请求（减轻服务器压力）
-                    // 缺点：图片体积会更大（文件请求速度会更慢）
-                    limit: 20 * 1024,
+                    limit: 8 * 1024,
                     // 问题：因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs
                     // 解析时会出问题：图片路径为[object Module]
                     // 解决：关闭 url-loader的es6模块化，使用commonjs解析
                     // tips：在我的机器上未遇到这种问题，猜测应该是url-loader的版本问题
                     esModule: false,
-                    // 给图片进行重命名
-                    // [name]取原文件名
-                    // [hash:12]取图片的hash前12位
-                    // [ext]取文件的原扩展名
-                    name: '[name]-[hash:12].[ext]'
+                    outputPath: 'src/images'
+                    // name: '[path][name]-[hash:8].[ext]',
+                    // context:'src'
                 }
             },
             {
                 test: /\.html$/,
-                // 处理html文件里的img图片（负责引入img，从而能被url-loader进行处理
                 loader: 'html-loader'
             },
-
-            // 打包其他资源（除了html、js、css资源以外的资源）
-            // {
-            //     排除css/js/html资源
-                // exclude: /\.(css|js|html|)/,
-                // loader: 'file-loader'
-            // }
-
             {
-                // 处理字体资源
                 test: /\.(ttf|eot|svg|ttf|woff|woff2)$/,
                 loader: 'file-loader',
                 options: {
                     name: '[path][name]-[hash:8].[ext]',//path为相对于context的路径
-                    context:'src'
+                    outputPath: 'src/font'
+                    // context:'src'
                 }
             },
         ]
     },
-    // plugin 的配置
     plugins: [
-        // html-webpack-plugin
-        // 功能：默认会创建一个空的html，引入打包输出的所有资源（ JS / CSS ）
-        // 需求：需要有结构的HTML文件
         new HtmlWebpackPlugin({
             // 以 template 路径的文件为模板，并引入打包输出的所有资源（ JS / CSS ）
             template: './src/index.html'
         })
     ],
-    // 模式
-    mode: 'development', // production
+    mode: 'development',
 
-    // 开发服务器 devServer：用来自动化（自动编译，自动打开浏览器，自动刷新浏览器）
-    // 特点：只会在内存中编译打包，不会有任何输出
-    // 启动 devServer 指令为：webpack-dev-server
     devServer: {
-        // 项目构建后的路径，如果配置了 html-webpack-plugin 的话，不会起作用
-        // contentBase: resolve(__dirname, 'dist'),
-        // 启动 gzip 压缩
         compress: true,
-        // 端口号
-        port: 8000,
-        open: false
+        port: 8000
     }
 }
 
