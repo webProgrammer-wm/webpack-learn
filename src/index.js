@@ -1,1 +1,1 @@
-import './style.scss'
+import './assets/font/iconfont.css'

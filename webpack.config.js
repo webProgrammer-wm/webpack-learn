@@ -40,7 +40,7 @@ const config = {
             {
                 // 问题：默认不能处理html中img图片
                 // 处理图片资源
-                test: /\.(jpg|png|gif|jpeg)$/,
+                test: /\.(jpg|png|gif|jpeg|)$/,
                 // 需要下载 url-loader file-loader
                 loader: 'url-loader',
                 options: {
@@ -64,7 +64,24 @@ const config = {
                 test: /\.html$/,
                 // 处理html文件里的img图片（负责引入img，从而能被url-loader进行处理
                 loader: 'html-loader'
-            }
+            },
+
+            // 打包其他资源（除了html、js、css资源以外的资源）
+            // {
+            //     排除css/js/html资源
+                // exclude: /\.(css|js|html|)/,
+                // loader: 'file-loader'
+            // }
+
+            {
+                // 处理字体资源
+                test: /\.(ttf|eot|svg|ttf|woff|woff2)$/,
+                loader: 'file-loader',
+                options: {
+                    name: '[path][name]-[hash:8].[ext]',//path为相对于context的路径
+                    context:'src'
+                }
+            },
         ]
     },
     // plugin 的配置
