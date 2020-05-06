@@ -41,6 +41,7 @@
     "dependencies": {
         "@babel/runtime": "^7.9.6",
         "@babel/runtime-corejs2": "^7.9.6",
+        "jquery": "^3.5.1",
         "sass-loader": "^8.0.2"
     },
     "browserslist": {

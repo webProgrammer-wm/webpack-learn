@@ -1,3 +1,4 @@
+import $ from 'jquery'
 export function mul(x, y) {
   return x * y;
 }

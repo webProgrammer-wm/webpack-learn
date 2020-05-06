@@ -5,10 +5,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const config = {
     mode: 'production',
     entry: {
-        // 多入口：输出多个文件
-        // 问题：如果有100个js，就要写100个键值对
-        index: './src/js/index',
-        test: './src/js/test'
+        index: './src/js/index.js',
+        test: './src/js/test.js'
     },
     output: {
         filename: "js/[name]/[name]-[contenthash].js",
@@ -24,6 +22,15 @@ const config = {
         }),
         new CleanWebpackPlugin({}),
     ],
+    /*
+        可以将node_modules 中代码单独打包一个chunk，最终输出
+        可以分析多入口chunk中，有没有公共的文件。如果有会打包成一个单独一个chunk
+     */
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    }
 }
 
 module.exports = config
