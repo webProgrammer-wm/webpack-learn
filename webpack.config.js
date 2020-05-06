@@ -50,7 +50,6 @@ const config = {
                         }
                     },
                     'css-loader',
-                    'sass-loader',
                     {
                         loader: 'postcss-loader',
                         options: {
@@ -60,7 +59,8 @@ const config = {
                                 require('postcss-preset-env')()
                             ]
                         }
-                    }
+                    },
+                    'sass-loader',
                 ]
             },
             {
@@ -86,13 +86,21 @@ const config = {
                 }
             },
             /*
-                js兼容性处理：babel-loader @babel/preset-env @babel/core
-                1.基本js兼容性处理 -> @babel/preset-env
-                  问题：只能转换基本语法，如promise不能转换
-                2.全部js兼容性处理 -> @babel/polyfill
-                  问题：将所有兼容性代码全部引入，体积太大
-                3.按需做兼容性处理 -> corejs
+                正常来讲，一个文件只能被一个loader处理。
+                当一个文件要被多个loader处理，那么一定要指定loader执行的先后顺序
+                先执行 eslint，再执行babel
              */
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'eslint-loader',
+                // 优先执行
+                enforce: "pre",
+                options: {
+                    // 自动修复
+                    fix: true
+                }
+            },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
@@ -104,9 +112,7 @@ const config = {
         new HtmlWebpackPlugin({
             template: './src/index.html',
             minify: {
-                // 移除空格
                 collapseWhitespace: true,
-                // 移除注释
                 removeComments: true
             }
         }),
@@ -114,11 +120,7 @@ const config = {
             filename: 'assets/css/[name].[contenthash].css',
         }),
         new OptimizeCssAssetsWebpackPlugin()
-    ],
-    devServer: {
-        compress: true,
-        port: 8000
-    }
+    ]
 }
 
 module.exports = config
