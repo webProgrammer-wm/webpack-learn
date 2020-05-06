@@ -1,10 +1,9 @@
-/*
-    开发环境的配置：能让代码运行
- */
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const config = {
+    mode: 'development',
     entry: './src/js/index',
     output: {
         filename: "js/index.js",
@@ -15,14 +14,25 @@ const config = {
             {
                 test: /\.css$/,
                 use: [
-                    'style-loader',
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            // 需要正确配置publicPath，才能正常显示背景图片
+                            publicPath: '../../'
+                        }
+                    },
                     'css-loader'
                 ]
             },
             {
                 test: /\.(sass|scss)$/,
                 use: [
-                    'style-loader',
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../../'
+                        }
+                    },
                     'css-loader',
                     'sass-loader'
                 ]
@@ -31,15 +41,10 @@ const config = {
                 test: /\.(jpg|png|gif|jpeg|)$/,
                 loader: 'url-loader',
                 options: {
+                    name: '[name]-[hash:8].[ext]',
                     limit: 8 * 1024,
-                    // 问题：因为url-loader默认使用es6模块化解析，而html-loader引入图片是commonjs
-                    // 解析时会出问题：图片路径为[object Module]
-                    // 解决：关闭 url-loader的es6模块化，使用commonjs解析
-                    // tips：在我的机器上未遇到这种问题，猜测应该是url-loader的版本问题
                     esModule: false,
-                    outputPath: 'src/images'
-                    // name: '[path][name]-[hash:8].[ext]',
-                    // context:'src'
+                    outputPath: 'assets/images'
                 }
             },
             {
@@ -47,24 +52,24 @@ const config = {
                 loader: 'html-loader'
             },
             {
-                test: /\.(ttf|eot|svg|ttf|woff|woff2)$/,
+                test: /\.(ttf|eot|svg|woff|woff2)$/,
                 loader: 'file-loader',
                 options: {
-                    name: '[path][name]-[hash:8].[ext]',//path为相对于context的路径
-                    outputPath: 'src/font'
-                    // context:'src'
+                    name: '[name]-[hash:8].[ext]',
+                    outputPath: 'assets/font'
                 }
             },
         ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            // 以 template 路径的文件为模板，并引入打包输出的所有资源（ JS / CSS ）
             template: './src/index.html'
+        }),
+        new MiniCssExtractPlugin({
+            filename: 'assets/css/[name].css',
+            publicPath: '../'
         })
     ],
-    mode: 'development',
-
     devServer: {
         compress: true,
         port: 8000
