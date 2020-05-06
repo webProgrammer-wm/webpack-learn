@@ -4,10 +4,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const config = {
     mode: 'production',
-    entry: {
-        index: './src/js/index.js',
-        test: './src/js/test.js'
-    },
+    entry: './src/js/index.js',
+    // entry: {
+    //     index: './src/js/index.js',
+    //     test: './src/js/test.js'
+    // },
     output: {
         filename: "js/[name]/[name]-[contenthash].js",
         path: resolve(__dirname, 'dist')
