@@ -33,74 +33,6 @@ const config = {
     },
     module: {
         rules: [
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            // 需要正确配置publicPath，才能正常显示背景图片
-                            publicPath: '../../'
-                        }
-                    },
-                    'css-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            ident: 'postcss',
-                            plugins: () => [
-                                // postcss的插件
-                                require('postcss-preset-env')()
-                            ]
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.(sass|scss)$/,
-                use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            publicPath: '../../'
-                        }
-                    },
-                    'css-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            ident: 'postcss',
-                            plugins: () => [
-                                // postcss的插件
-                                require('postcss-preset-env')()
-                            ]
-                        }
-                    },
-                    'sass-loader',
-                ]
-            },
-            {
-                test: /\.(jpg|png|gif|jpeg|)$/,
-                loader: 'url-loader',
-                options: {
-                    name: '[name]-[hash:8].[ext]',
-                    limit: 8 * 1024,
-                    esModule: false,
-                    outputPath: 'assets/images'
-                }
-            },
-            {
-                test: /\.html$/,
-                loader: 'html-loader'
-            },
-            {
-                test: /\.(ttf|eot|svg|woff|woff2)$/,
-                loader: 'file-loader',
-                options: {
-                    name: '[name]-[hash:8].[ext]',
-                    outputPath: 'assets/font'
-                }
-            },
             /*
                 正常来讲，一个文件只能被一个loader处理。
                 当一个文件要被多个loader处理，那么一定要指定loader执行的先后顺序
@@ -118,9 +50,83 @@ const config = {
                 }
             },
             {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'babel-loader'
+                // 以下loader只会匹配一个
+                // 注意：不能有两个配置处理同一种类型文件
+                oneOf: [
+                    {
+                        test: /\.css$/,
+                        use: [
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                                options: {
+                                    // 需要正确配置publicPath，才能正常显示背景图片
+                                    publicPath: '../../'
+                                }
+                            },
+                            'css-loader',
+                            {
+                                loader: 'postcss-loader',
+                                options: {
+                                    ident: 'postcss',
+                                    plugins: () => [
+                                        // postcss的插件
+                                        require('postcss-preset-env')()
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        test: /\.(sass|scss)$/,
+                        use: [
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                                options: {
+                                    publicPath: '../../'
+                                }
+                            },
+                            'css-loader',
+                            {
+                                loader: 'postcss-loader',
+                                options: {
+                                    ident: 'postcss',
+                                    plugins: () => [
+                                        // postcss的插件
+                                        require('postcss-preset-env')()
+                                    ]
+                                }
+                            },
+                            'sass-loader',
+                        ]
+                    },
+                    {
+                        test: /\.(jpg|png|gif|jpeg|)$/,
+                        loader: 'url-loader',
+                        options: {
+                            name: '[name]-[hash:8].[ext]',
+                            limit: 8 * 1024,
+                            esModule: false,
+                            outputPath: 'assets/images'
+                        }
+                    },
+                    {
+                        test: /\.html$/,
+                        loader: 'html-loader'
+                    },
+                    {
+                        test: /\.(ttf|eot|svg|woff|woff2)$/,
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name]-[hash:8].[ext]',
+                            outputPath: 'assets/font'
+                        }
+                    },
+                    {
+                        test: /\.js$/,
+                        exclude: /node_modules/,
+                        loader: 'babel-loader'
+                    }
+                ]
             }
         ]
     },
