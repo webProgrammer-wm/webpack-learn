@@ -1,3 +1,13 @@
+/*
+    HMR：hot module replacement
+    作用:一个模块发生变化，只会重新打包这一个模块（而不是打包所有模块）
+        极大提升构建速度
+        样式文件：如果你使用的是style-loader，那么可以使用HMR，因为它内部已经实现了
+        js文件：默认不能使用HMR功能 -> 需要修改js代码，添加支持HMR功能的代码
+            注意：HMR功能对js的处理，只能处理非入口js文件的其他文件
+        html文件：默认不能使用hmr功能，同时会导致 html 文件不能热更新
+            解决：修改entry入口，将html文件引入
+ */
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 // 抽离css
@@ -9,11 +19,16 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 
 const config = {
     // 生产模式下自动压缩js代码
-    mode: 'production',
-    entry: './src/js/index',
+    mode: 'development',
+    entry: ['./src/js/index', './src/index.html'],
     output: {
         filename: "js/index.js",
         path: resolve(__dirname, 'dist')
+    },
+    devServer: {
+        compress: true,
+        port: 8000,
+        hot: true
     },
     module: {
         rules: [
