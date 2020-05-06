@@ -1,6 +1,9 @@
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+// 抽离css
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+// 压缩css
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 
 // process.env.NODE_ENV = 'development'
 
@@ -24,26 +27,6 @@ const config = {
                         }
                     },
                     'css-loader',
-                    /*
-                        css 兼容性处理：postcss -> postcss-loader postcss-preset-env
-                        帮 postcss 找到 package.json 中 browserslist里面的配置，通过配置加载指定的css兼容性样式
-
-                        "browserslist": {
-                            // 开发环境 --> 设置 node 环境变量：process.env.NODE_ENV = 'development'
-                            "development": [
-                                "last 1 chrome version",
-                                "last 1 firefox version",
-                                "laST 1 safari version"
-                            ],
-                            "production": [
-                                ">0.2%",
-                                "not dead",
-                                "not op_mini all"
-                            ]
-                        }
-                     */
-                    // 使用loader的默认配置
-                    // 'postcss-loader',
                     {
                         loader: 'postcss-loader',
                         options: {
@@ -109,7 +92,8 @@ const config = {
         }),
         new MiniCssExtractPlugin({
             filename: 'assets/css/[name].[hash].css',
-        })
+        }),
+        new OptimizeCssAssetsWebpackPlugin()
     ],
     devServer: {
         compress: true,
