@@ -85,20 +85,17 @@ const config = {
                 }
             },
             /*
-                语法检查：eslint-loader eslint
-                注意:只检查自己写的源代码，第三方的库不用检查
-                设置检查规则:
-                    package.json 中 eslintConfig 中设置
-                    airbnb -> eslint-config-aribnb-base eslint-plugin-import eslint
+                js兼容性处理：babel-loader @babel/preset-env @babel/core
+                1.基本js兼容性处理 -> @babel/preset-env
+                  问题：只能转换基本语法，如promise不能转换
+                2.全部js兼容性处理 -> @babel/polyfill
+                  问题：将所有兼容性代码全部引入，体积太大
+                3.按需做兼容性处理 -> corejs
              */
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'eslint-loader',
-                options: {
-                    // 自动修复
-                    fix: true
-                }
+                loader: 'babel-loader'
             }
         ]
     },
