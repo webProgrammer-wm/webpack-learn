@@ -8,7 +8,8 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 // process.env.NODE_ENV = 'development'
 
 const config = {
-    mode: 'development',
+    // 生产模式下自动压缩js代码
+    mode: 'production',
     entry: './src/js/index',
     output: {
         filename: "js/index.js",
@@ -101,7 +102,13 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html'
+            template: './src/index.html',
+            minify: {
+                // 移除空格
+                collapseWhitespace: true,
+                // 移除注释
+                removeComments: true
+            }
         }),
         new MiniCssExtractPlugin({
             filename: 'assets/css/[name].[contenthash].css',
