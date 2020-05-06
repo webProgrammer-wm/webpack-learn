@@ -84,6 +84,22 @@ const config = {
                     outputPath: 'assets/font'
                 }
             },
+            /*
+                语法检查：eslint-loader eslint
+                注意:只检查自己写的源代码，第三方的库不用检查
+                设置检查规则:
+                    package.json 中 eslintConfig 中设置
+                    airbnb -> eslint-config-aribnb-base eslint-plugin-import eslint
+             */
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'eslint-loader',
+                options: {
+                    // 自动修复
+                    fix: true
+                }
+            }
         ]
     },
     plugins: [
@@ -91,7 +107,7 @@ const config = {
             template: './src/index.html'
         }),
         new MiniCssExtractPlugin({
-            filename: 'assets/css/[name].[hash].css',
+            filename: 'assets/css/[name].[contenthash].css',
         }),
         new OptimizeCssAssetsWebpackPlugin()
     ],
