@@ -1,53 +1,119 @@
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin')
 
-/*
-    PWA：渐进式网络开发应用程序（离线可访问）
-        workbox -> workbox-webpack-plugin
- */
+// process.env.NODE_ENV = 'development'
+
 const config = {
-    mode: 'production',
-    entry: './src/js/index.js',
-    // entry: {
-    //     index: './src/js/index.js',
-    //     test: './src/js/test.js'
-    // },
+    mode: 'development',
+    entry: './src/js/index',
     output: {
-        filename: "js/[name]/[name]-[contenthash].js",
+        filename: "js/index.js",
         path: resolve(__dirname, 'dist')
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../../'
+                        }
+                    },
+                    'css-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            ident: 'postcss',
+                            plugins: () => [
+                                // postcss的插件
+                                require('postcss-preset-env')()
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(sass|scss)$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '../../'
+                        }
+                    },
+                    'css-loader',
+                    'sass-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            ident: 'postcss',
+                            plugins: () => [
+                                // postcss的插件
+                                require('postcss-preset-env')()
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(jpg|png|gif|jpeg|)$/,
+                loader: 'url-loader',
+                options: {
+                    name: '[name]-[hash:8].[ext]',
+                    limit: 8 * 1024,
+                    esModule: false,
+                    outputPath: 'assets/images'
+                }
+            },
+            {
+                test: /\.html$/,
+                loader: 'html-loader'
+            },
+            {
+                test: /\.(ttf|eot|svg|woff|woff2)$/,
+                loader: 'file-loader',
+                options: {
+                    name: '[name]-[hash:8].[ext]',
+                    outputPath: 'assets/font'
+                }
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: [
+                    /* 开启多进程打包
+                       进程启动大概为600ms，进程通信也有开销
+                       只有工作消耗时间比较长，才需要多进程打包
+                     */
+                    {
+                        loader: 'thread-loader',
+                        options: {
+                            workers: 2 // 2个进程
+                        }
+                    },
+                    {
+                        loader: 'babel-loader'
+                    }
+                ]
+            }
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html',
-            minify: {
-                collapseWhitespace: true,
-                removeComments: true
-            }
+            template: './src/index.html'
         }),
-        new CleanWebpackPlugin({}),
-
-        new WorkboxWebpackPlugin.GenerateSW({
-            /*
-                1.帮助serviceworker快速启动
-                2.删除旧的 serviceworker
-
-                生成一个 serviceworker 配置文件
-
-             */
-            clientsClaim: true,
-            skipWaiting: true
-        })
+        new MiniCssExtractPlugin({
+            filename: 'assets/css/[name].[contenthash].css',
+        }),
+        new OptimizeCssAssetsWebpackPlugin()
     ],
-    /*
-        可以将node_modules 中代码单独打包一个chunk，最终输出
-        可以分析多入口chunk中，有没有公共的文件。如果有会打包成一个单独一个chunk
-     */
-    optimization: {
-        splitChunks: {
-            chunks: 'all'
-        }
+    devServer: {
+        compress: true,
+        port: 8000
     }
 }
 
