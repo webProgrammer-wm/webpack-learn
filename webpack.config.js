@@ -1,26 +1,41 @@
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-/*
-
- */
-
 const config = {
     mode: 'development',
     entry: './src/js/index.js',
     output: {
-        // 文件名称（指定名称 + 目录）
         filename: "js/[name].js",
-        // 输出文件目录（将来所有资源输出的公共目录）
         path: resolve(__dirname, 'dist'),
-        // 所有输出资源引入的公共路径的前缀 -> 路径的前面
-        publicPath: "/",
-        // 非入口chunk的名称
-        chunkFilename: '[name]_chunk.js',
-        // library: '[name]', // 整个库向外暴露的变量名
-        // libraryTarget: 'window', // 变量名添加到window上，browser端
-        // libraryTarget: 'global' // 变量名添加到global上，node端
-        // libraryTarget: 'commonjs'
+    },
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                // 多个loader用use
+                use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.js$/,
+                // 排除node_modules下的js文件
+                exclude: /node_modules/,
+                // 只检查src下的js文件
+                include: resolve(__dirname, 'src'),
+                // 优先执行
+                enforce: 'pre',
+                // 延后执行
+                // enforce: 'post',
+                // 单个loader
+                loader: 'eslint-loader',
+                options: {
+
+                }
+            },
+            {
+                // 以下配置只会匹配到成功的一个
+                oneOf: []
+            }
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin()
