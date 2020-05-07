@@ -15,27 +15,19 @@ const config = {
                 // 多个loader用use
                 use: ['style-loader', 'css-loader']
             },
-            {
-                test: /\.js$/,
-                // 排除node_modules下的js文件
-                exclude: /node_modules/,
-                // 只检查src下的js文件
-                include: resolve(__dirname, 'src'),
-                // 优先执行
-                enforce: 'pre',
-                // 延后执行
-                // enforce: 'post',
-                // 单个loader
-                loader: 'eslint-loader',
-                options: {
-
-                }
-            },
-            {
-                // 以下配置只会匹配到成功的一个
-                oneOf: []
-            }
         ]
+    },
+    // 解析模块的规则
+    resolve: {
+        // 配置解析模块路径别名
+        alias: {
+            // 简写路径
+            $css: resolve(__dirname, 'src/assets/css')
+        },
+        // 配置省略文件路径的后缀名
+        extensions: ['.js', '.json', '.jsx', '.css'],
+        // 告诉 webpack 解析模块的时候去找哪个目录
+        modules: [resolve(__dirname, '../../node_modules'), 'node_modules']
     },
     plugins: [
         new HtmlWebpackPlugin()
