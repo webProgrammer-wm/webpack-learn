@@ -1,48 +1,14 @@
 const { resolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 const config = {
-    mode: 'development',
+    mode: 'production',
     entry: './src/js/index.js',
     output: {
-        filename: "js/[name].js",
+        filename: "js/[name].[contenthash:10].js",
         path: resolve(__dirname, 'dist'),
-    },
-    devServer: {
-        // 运行代码的目录
-        contentBase: resolve(__dirname, 'dist'),
-        // 监视 contentBase 目录下的所有文件，一旦文件变化就会 reload
-        watchContentBase: true,
-        watchOptions: {
-            //
-            ignored: /node_modules
-        },
-        // 启动gzip压缩
-        compress: true,
-        // 端口号
-        port: 8000,
-        // 域名
-        host: 'localhost',
-        open: false,
-        // 开启HMR功能
-        hot: true,
-        // 不要显示启动服务器日志信息
-        clientLogLevel: 'none',
-        // 除了一些基本启动信息意外，其他内容都不要显示
-        quiet: true,
-        // 如果出错了，是否全屏提示
-        overlay: false,
-        // 服务器代理 -> 解决的开发环境跨域问题
-        proxy: {
-            // 一旦devServer（8000）服务器接收到 /api/xxx 的请求，就会转发到 target
-            '/api': {
-                target: 'http://localhost:3000',
-                // 发送请求时，请求路径重写：将/api/login -> /login （去掉api）
-                pathRewrite: {
-                    '^/api': ''
-                }
-            }
-        }
+        chunkFilename: 'js/[name].[contenthash:10]_chunk.js'
     },
     module: {
         rules: [
@@ -64,6 +30,50 @@ const config = {
         extensions: ['.js', '.json', '.jsx', '.css'],
         // 告诉 webpack 解析模块的时候去找哪个目录
         modules: [resolve(__dirname, '../../node_modules'), 'node_modules']
+    },
+    optimization: {
+        splitChunks: {
+            chunks: "all",
+            // 默认值
+            // minSize: 30 * 1024, // 分割的chunk最小为30kb
+            // maxSize: 0, // 最大没有限制
+            // minChunks: 1, // 至少被引用了一次才会被分割
+            // maxAsyncRequests: 5, // 按需加载时并行加载文件的最大数量
+            // maxInitialRequests: 3, // 入口js文件最大并行请求数量
+            // automaticNameDelimiter: "~", // 名称连接符
+            // cacheGroups: { // 分割chunk的组
+            //     // node_modules 文件会被打包到 vendors 组的chunk中。 -> vendors~xxx.js
+            //     // 满足上面的公共规则
+            //     vendors: {
+            //         test: /[\\/]node_modules[\\/]/,
+            //         // 优先级
+            //         priority: -10
+            //     },
+            //     default: {
+            //         // 要提取的chunk最少被引用2次
+            //         minChunks: 2,
+            //         priority: -20,
+            //         // 如果当前要打包的模块，和之前已经被提取的模块是同一个，就会复用，而不是重新打包模块
+            //         reuseExistingChunk: true
+            //     }
+            // }
+        },
+        // 将当前模块记录其他模块的hash单独打包为一个文件：runtime
+        // 解决问题：修改a文件导致b文件的contenthash变化
+        runtimeChunk: {
+            name: entrypoint => `runtime-${entrypoint.name}`
+        },
+        minimizer: [
+            // 配置生产环境的压缩方案：js和css
+            new TerserWebpackPlugin({
+                // 开启缓存
+                cache: true,
+                // 开启多进程打包
+                parallel: true,
+                // 启动source-map
+                sourceMap: true
+            })
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin()

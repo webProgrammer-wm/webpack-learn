@@ -1,5 +1,8 @@
-function add(x, y) {
+export function add(x, y) {
     return x + y
 }
 
-export default add
+export function mul(x, y) {
+    return x * y
+}
+
