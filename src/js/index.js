@@ -1,13 +1,13 @@
-/*
-    通过js代码，让某个文件被单独打包成一个chunk
-    import 动态导入语法：能将某个文件单独打包
- */
-import(/* webpackChunkName: 'test' */'./test')
-    // 文件加载成功
-    .then(({add, mul}) => {
-        console.log(add(1, 12))
+console.log('index文件被加载了')
+
+import { mul } from './test'
+
+document.querySelector('#btn').onclick = function () {
+    // 懒加载：当文件需要使用时才加载
+    // 预加载：webpackPrefetch: true 会提前加载js文件
+    // 正在加载可以认为是并行加载（同一时间加载多个文件）
+    // 预加载则是等其他资源加载完毕，浏览器空闲了，再偷偷加载资源
+    import(/* webpackChunkName: 'test', webpackPrefetch: true */'./test').then(({ mul }) => {
+        console.log(mul(4, 5))
     })
-    // 文件加载失败
-    .catch(err => {
-        console.log(err)
-    })
+}
